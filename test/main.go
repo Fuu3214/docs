@@ -4,9 +4,40 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
+	"github.com/BurntSushi/toml"
+)
+
+type Config struct {
+	Common     map[string]interface{} `toml:"Common"`
+	IpDataBase struct {
+		L5       string `toml:"l5"`
+		Username string `toml:"username"`
+		Password string `toml:"password"`
+		Db       string `toml:"db"`
+	} `toml:"IpDataBase"`
+	AlbumDataBase struct {
+		L5       string `toml:"l5"`
+		Username string `toml:"username"`
+		Password string `toml:"password"`
+		Db       string `toml:"db"`
+	} `toml:"AlbumDataBase"`
+}
+
+var (
+	// CommVar 读取通用配置
+	conf  = Config{}
+	conf2 = make(map[string]interface{})
 )
 
 func main() {
+	var config Config
+	if _, err := toml.DecodeFile("./conf/comm.toml", &config); err != nil {
+		panic(err)
+	}
+	fmt.Println(config)
+}
+
+func testCodec() {
 	arr := []int64{1, 2, 3, 4, 5, 6, 5, 4}
 	// 将 int64 数组编码为字节数组
 	buf := new(bytes.Buffer)

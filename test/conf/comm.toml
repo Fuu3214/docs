@@ -1,0 +1,15 @@
+[common]
+# normal cluster
+SRFCmd = "quku.MediaLink.MediaLinkService"
+
+[ipDataBase]
+l5 = "1813633:131072"
+username = "data_service_3"
+password = "data_service_3"
+db = "music_link"
+
+[albumDataBase]
+l5 = "881857:131072"
+username = "data_service_3"
+password = "data_service_3"
+db = "music"
