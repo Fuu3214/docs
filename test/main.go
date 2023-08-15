@@ -8,18 +8,22 @@ import (
 )
 
 type Config struct {
-	Common     map[string]interface{} `toml:"Common"`
-	IpDataBase struct {
+	Common       map[string]interface{} `toml:"Common"`
+	LinkDataBase struct {
 		L5       string `toml:"l5"`
 		Username string `toml:"username"`
 		Password string `toml:"password"`
 		Db       string `toml:"db"`
-	} `toml:"IpDataBase"`
+		Ip       string `toml:"ip"`
+		Port     string `toml:"port"`
+	} `toml:"LinkDataBase"`
 	AlbumDataBase struct {
 		L5       string `toml:"l5"`
 		Username string `toml:"username"`
 		Password string `toml:"password"`
 		Db       string `toml:"db"`
+		Ip       string `toml:"ip"`
+		Port     string `toml:"port"`
 	} `toml:"AlbumDataBase"`
 }
 
