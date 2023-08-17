@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"fmt"
-	"github.com/BurntSushi/toml"
+	"math/rand"
 )
 
 type Config struct {
@@ -34,11 +34,7 @@ var (
 )
 
 func main() {
-	var config Config
-	if _, err := toml.DecodeFile("./conf/comm.toml", &config); err != nil {
-		panic(err)
-	}
-	fmt.Println(config)
+	fmt.Println(rand.Int() % 100)
 }
 
 func testCodec() {
