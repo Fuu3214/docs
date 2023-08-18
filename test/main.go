@@ -3,8 +3,8 @@ package main
 import (
 	"bytes"
 	"encoding/binary"
+	"errors"
 	"fmt"
-	"math/rand"
 )
 
 type Config struct {
@@ -33,8 +33,38 @@ var (
 	conf2 = make(map[string]interface{})
 )
 
+type MyError struct {
+	message string
+	err     error
+}
+
+func (e MyError) Error() string {
+	return e.message + ": " + e.err.Error()
+}
+
+func (e MyError) Unwrap() error {
+	return e.err
+}
+
+var someErr = errors.New("some error")
+
+func doSomething() error {
+	// some code that may return an error
+	return MyError{
+		message: "msg",
+		err:     someErr,
+	}
+}
+
 func main() {
-	fmt.Println(rand.Int() % 100)
+	err := doSomething()
+	if errors.As(err, &MyError{}) {
+		fmt.Println("Error is of type someError")
+	}
+	err2 := errors.New("msg")
+	if errors.As(err2, &MyError{}) {
+		fmt.Println("Error is of type someError")
+	}
 }
 
 func testCodec() {
