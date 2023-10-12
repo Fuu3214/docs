@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/binary"
+	"encoding/json"
 	"errors"
 	"fmt"
 )
@@ -56,15 +57,56 @@ func doSomething() error {
 	}
 }
 
+type ApiResponse struct {
+	ErrCode int         `json:"code"` // 错误码,0表示无错误
+	Message string      `json:"msg"`  // 提示信息
+	Data    interface{} `json:"data"` // 响应数据,一般从这里前端从这个里面取出数据展示
+}
+
+type MyStruct struct {
+	A string
+	B string
+	C int
+}
+type MMyStruct []*MyStruct
+
+type KafkaRebuildErr error
+
+// Field .
+type Field struct {
+	Type     string `json:"type"`
+	Value    string `json:"value"`
+	OldValue string `json:"old_value,omitempty"`
+}
+
+// Rows .
+type Rows struct {
+	Data map[string]Field `json:"data"`
+}
+
+// Meta .
+type Meta struct {
+	Index     *string `json:"index"`
+	LastIndex *string `json:"last_index"`
+	Type      string  `json:"type"`
+	Table     string  `json:"table"`
+	Errcode   int     `json:"errcode"`
+	Version   int     `json:"version"`
+	Timestamp []int64 `json:"timestamp"`
+}
+
+// CdcMsg .
+type CdcMsg struct {
+	Meta Meta                         `json:"meta"`
+	Data map[string]map[string]string `json:"data"`
+}
+
 func main() {
-	err := doSomething()
-	if errors.As(err, &MyError{}) {
-		fmt.Println("Error is of type someError")
-	}
-	err2 := errors.New("msg")
-	if errors.As(err2, &MyError{}) {
-		fmt.Println("Error is of type someError")
-	}
+	str := "{\"meta\":{\"index\":\"2145790-1669-103431782-0\",\"last_index\":\"2145790-1669-103431490-0\",\"type\":\"update\",\"table\":\"music.t_track_data\",\"errcode\":0,\"version\":2,\"timestamp\":[1695183675000,1695183675000,1695183675810,0]},\"data\":{\"Falbum_status\":{\"type\":\"int\",\"value\":\"1\"},\"Falias_name\":{\"type\":\"string\",\"value\":\"\"},\"Fall_singer\":{\"type\":\"string\",\"value\":\"\"},\"Fdesc_status\":{\"type\":\"int\",\"value\":\"0\"},\"Fex_status\":{\"type\":\"int\",\"value\":\"1\"},\"Fex_status1\":{\"type\":\"int\",\"value\":\"0\"},\"Fex_status2\":{\"type\":\"int\",\"value\":\"1\"},\"Fex_status3\":{\"type\":\"int\",\"value\":\"1\"},\"Fex_status4\":{\"type\":\"int\",\"value\":\"1\"},\"Ffm_album_status\":{\"type\":\"int\",\"value\":\"1\"},\"Ffm_ex_status\":{\"type\":\"int\",\"value\":\"0\"},\"Fhk_album_status\":{\"type\":\"int\",\"value\":\"1\"},\"Fhk_ex_status\":{\"type\":\"int\",\"value\":\"0\"},\"Fhk_status\":{\"type\":\"int\",\"value\":\"0\"},\"Flastest_modify_time\":{\"old_value\":\"1695183649\",\"type\":\"int\",\"value\":\"1695183675\"},\"Flisten_count\":{\"type\":\"int\",\"value\":\"10704\"},\"Flisten_count1\":{\"old_value\":\"100155227\",\"type\":\"int\",\"value\":\"100153247\"},\"Fmodify_time\":{\"old_value\":\"2023-09-20 12:18:27\",\"type\":\"string\",\"value\":\"2023-09-20 12:21:15\"},\"Foversea_type\":{\"type\":\"int\",\"value\":\"5\"},\"Fsearch_key\":{\"type\":\"string\",\"value\":\"\"},\"Fshow_status\":{\"type\":\"int\",\"value\":\"1\"},\"Fstop_update\":{\"type\":\"int\",\"value\":\"0\"},\"Ftrack_eq\":{\"type\":\"int\",\"value\":\"2\"},\"Ftrack_id\":{\"type\":\"int\",\"value\":\"4930524\"},\"Ftrack_new_name\":{\"type\":\"string\",\"value\":\"\"},\"Ftrans_name\":{\"type\":\"string\",\"value\":\"\"},\"Ftv_name\":{\"type\":\"string\",\"value\":\"\"},\"Fversion_d\":{\"type\":\"string\",\"value\":\"\"}}}"
+	var cm CdcMsg
+	err := json.Unmarshal([]byte(str), &cm)
+	fmt.Println(cm, err)
+	fmt.Println(*cm.Meta.Index)
 }
 
 func testCodec() {
